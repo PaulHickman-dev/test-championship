@@ -1,0 +1,63 @@
+/* You can add global styles to this file, and also import other style files */
+
+//@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import './app/theme.scss';
+
+$material-icons-font-path: '~material-icons/iconfont/';
+ 
+@import '~material-icons/iconfont/material-icons.scss';
+
+BODY 
+{
+    margin: 0px;
+}
+
+.button-row
+{
+    margin-top: 24px;
+
+    a,
+    button,
+    .spaced
+    {
+        margin-right: 8px;
+    }
+}
+
+td.mat-cell.results-cell
+{
+    padding-left: 8px;
+    padding-right: 8px;
+
+}
+
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+@media (max-width: 550px) {
+    .wrap {
+        display:block;
+    }
+
+    .button-row {
+        display: flex; 
+        justify-content: center;
+    }
+
+    .mat-vertical-stepper-header{
+        padding: 24px 8px !important;
+    }
+
+    .mat-vertical-content-container {
+        margin-left: 12px !important;
+    }
+
+    .mat-stepper-vertical-line::before {
+        left: 8px !important;
+    }
+
+}

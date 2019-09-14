@@ -1,0 +1,18 @@
+<h3>Team List</h3>
+<p>The actual teams in the championship are below. Change this if you want to see what would happen if others were playing:</p>
+<form [formGroup]="form" (ngSubmit)="submit()">
+<mat-list>
+    <mat-list-item *ngFor="let team of teamsList.controls; let i=index" formArrayName="teams">
+        <mat-form-field>
+            <input matInput [formControlName]="i" placeholder="Team Name"/>    
+        </mat-form-field>
+        <button *ngIf="hasTwoTeams()" mat-button (click)="removeTeam(i)"><mat-icon>delete</mat-icon></button>
+    </mat-list-item>
+    <mat-error *ngIf="hasDuplicateNames()" class="form__error">Duplicate team name</mat-error>
+</mat-list>    
+<div class="button-row">
+    <button mat-flat-button color="accent" (click)="addTeam('')"><mat-icon add>add</mat-icon>Add Team</button>
+    <button mat-flat-button matStepperNext type="submit" [disabled]="!form.valid" color="primary"><mat-icon>navigate_next</mat-icon>Next</button>
+</div>
+</form>
+

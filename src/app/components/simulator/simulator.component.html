@@ -1,0 +1,19 @@
+<mat-vertical-stepper linear MatVerticalStepperScroller>
+    <mat-step label="What's all this about?">
+        <app-explanation ></app-explanation>
+    </mat-step>
+    <mat-step label="Particiapting Teams" [stepControl]="Teams.form">
+        <app-teams #Teams></app-teams>
+    </mat-step>
+    <mat-step label="Series Schedule" [stepControl]="Schedule.form">
+        <app-schedule #Schedule></app-schedule>
+    </mat-step>
+    <mat-step label="Probabilities" >
+        <app-probabilities #Probabilities></app-probabilities>
+    </mat-step>
+    <mat-step label="Results" >
+        <app-results #Results></app-results>
+    </mat-step>
+        
+</mat-vertical-stepper>
+

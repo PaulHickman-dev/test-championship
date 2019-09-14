@@ -1,0 +1,69 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+    <p>The simulation relies on a few assumed probabilities. You can edit these if you think the assumptions I've made are incorrect.</p>
+    <h3>Draws</h3>
+    <p>In the test championship, each team only gets a third of the match points for a draw.</p>
+    <p>The current trend in the number of draws year-on-year is downward:</p>
+    <ul>
+        <li>From Jan 2015 - July 2019, 14.5% of matches were drawn.</li>
+        <li>From Jan 2010 - Dec 2014, 24.8% of matches were drawn.</li>
+        <li>Will 4 day tests push this back up again?</li>
+        <li>Will the incentive of the test championship points / erosion of test batting skills push it down further?</li>
+    </ul>           
+    <p>What do you think its going to be for the next 3 years?</p>
+    <mat-form-field>
+        <mat-label>Chance of a draw (%)</mat-label>
+        <input type="number" matInput formControlName="draw">
+    </mat-form-field>
+    <h3>Ties</h3>
+    <p>Only 2 matches in the 2300+ tests ever played have ended in a tie. Both teams get half-points for a tie.</p>
+    <mat-form-field>
+        <mat-label>Chance of a tie (%)</mat-label>
+        <input type="number" matInput formControlName="tie">
+    </mat-form-field>
+    <h3>Home Advantage</h3>
+    <p>If a match isn't drawn or tied, how much impact does home advantage give?</p>
+    <p>Note: as some teams don't have equal number of home and away matches, changing this will introduce a bias towards some teams over others.</p>
+    <mat-form-field class="spacer">
+        <mat-label>Chance of a home win (%)</mat-label>
+        <input type="number" matInput formControlName="home" (change)="balanceHomeAway(true)">
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Chance of a away win (%)</mat-label>
+        <input type="number" matInput formControlName="away" (change)="balanceHomeAway(false)">
+    </mat-form-field> 
+    <h3>Slow Over Rates</h3>   
+    <p>A team will incur a penalty over and lose 2 points for each over lost in a match due to slow over rate 
+        (after allowances for the usual excuses), unless the innings they bowl are very short (in which case they are let off.)</p>
+    <p>Specifically:</p>
+    <ul>
+        <li>They are let off if they bowl a total of 60 overs or fewer in the whole match.</li>
+        <li>They are let off if they get 20 wickets in 120 overs or fewer.</li>
+        <li>If one of the two innings is completed in less than 60 overs, and it is completed without there being a slow over rate, that innings is ignored, and the bowling team's over rate is calculated based on only the rate in the other innings.</li>
+        <li>Also every player is now fined a percentage of match fees, not just the captain, so the frequency of slow over rates <i>should</i> come down.</li>
+    </ul>
+    <p>A <a target="_blank" href="https://www.espncricinfo.com/story/_/id/25978697/breaches-bans-all-need-know-rate-offences">Cricinfo article from Feb 2019</a>
+        has lots of statistics on this, but rarely differentiates between ODIs, T20s and tests in the statistics it present. It (combined with a StatsGuru query
+        on the number of tests won) reveals that 11% of tests sine 2003 have had at penalties issued for least one over lost.</p>
+    <p>What do you think the chances are for each team that they incur penalty overs and lose points in each match they play?</p>
+    <div *ngFor="let i of [0,1,2,3,4,5,6,7,8,9]" formArrayName="penalty">
+        <mat-form-field>
+            <mat-label>At least {{i+1}} penalty over{{i>0?"s":""}} (%)</mat-label>
+            <input type="number" matInput [formControlName]="i" >
+        </mat-form-field>
+        <button mat-button (click)="zeroSlowOverRate(i)"><mat-icon>block</mat-icon></button>
+    </div>
+
+    <h3>Number of Simulations</h3>   
+    <p>The more times you simulate the championship, the more accurate the results but the longer you have to wait. 250,000 should only take a few seconds on most devices.</p>
+
+    <mat-form-field>
+        <mat-label>Number of simulations</mat-label>
+        <input type="number" matInput formControlName="iterations" >
+    </mat-form-field>
+
+    <div class="button-row">
+        <button mat-stroked-button color="primary" matStepperPrevious><mat-icon>navigate_before</mat-icon>Back</button>
+        <button mat-flat-button matStepperNext type="submit" [disabled]="!form.valid" color="primary"><mat-icon>navigate_next</mat-icon>Run this thing already</button>
+    </div>
+    
+</form>

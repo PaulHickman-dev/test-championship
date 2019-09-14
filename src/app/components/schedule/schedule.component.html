@@ -1,0 +1,68 @@
+<h3>Series List</h3>
+<p>The test championship is played over 3 years, and not every team plays every other team. Each series has between 2 and 5 tests, and 120 points are available for each series regardless of how long it is.</p>
+<p>Below is the actual 2019-2021 schedule (or at least the bits of it involving teams you didn't remove on the last page). Edit this to see the impact of changing the series played; don't
+change anything to test the fairness of the real schedule.</p>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="table-responsive">
+        <table>
+            <tr *ngFor="let series of seriesList.controls; let i=index" formArrayName="series">
+                <td>
+                <div [formGroupName]="i" class="button-row">                                
+                    <span class="wrap">
+                        <mat-form-field class="spaced team">
+                            <mat-select formControlName="home" placeholder="Home Team">
+                                <mat-option *ngFor="let team of championship.teams" [value]="team.name">{{team.name}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    <mat-form-field class="spaced team">
+                        <mat-select formControlName="away" placeholder="Away Team">
+                            <mat-option *ngFor="let team of championship.teams" [value]="team.name">{{team.name}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    </span>
+                    <span class="wrap">
+                    <mat-form-field class="spaced matches">
+                        <mat-select formControlName="matches" placeholder="Matches">
+                            <mat-option *ngFor="let length of lengths" [value]="length">{{length}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <button *ngIf="hasASeries()" mat-button (click)="removeSeries(i)"><mat-icon>delete</mat-icon></button>
+                </span>
+            </div>
+            </td>
+            </tr>
+        </table>               
+    </div>
+    <div class="button-row">        
+        <button type="button" mat-flat-button color="accent" (click)="addSeries({ home: null, away: null, matches: 2})"><mat-icon add>add</mat-icon>Add Series</button>
+    </div>
+    <h3>Summary</h3>
+    <table mat-table [dataSource]="dataSource" matSort class="data-table" #SummaryTable (matSortChange)="sortData($event)" matSortDirection="desc" matSortActive="matches" matSortDisableClear>
+        <ng-container matColumnDef="team">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Team</th>
+            <td mat-cell *matCellDef="let team" class="results-cell">{{team.name}}</td>
+        </ng-container>
+        <ng-container matColumnDef="series">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Series</th>
+            <td mat-cell *matCellDef="let team" class="results-cell">{{team.homeSeries+team.awaySeries}} ({{team.homeSeries}}H,{{team.awaySeries}}A)</td>
+        </ng-container>
+        <ng-container matColumnDef="matches">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Matches</th>
+            <td mat-cell *matCellDef="let team" class="results-cell">{{team.homeMatches+team.awayMatches}} ({{team.homeMatches}}H,{{team.awayMatches}}A)</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <div *ngIf="uneven" class="uneven">
+        WARNING: You do not have all teams playing an equal number of home and away series.
+    </div>
+
+    <div class="button-row">        
+        <button mat-stroked-button color="primary" matStepperPrevious><mat-icon>navigate_before</mat-icon>Back</button>
+        <button mat-flat-button matStepperNext type="submit" [disabled]="!form.valid" color="primary"><mat-icon>navigate_next</mat-icon>Next</button>
+    </div>
+</form>
+
+        

@@ -1,0 +1,194 @@
+<div *ngIf="results === undefined || results.status=='notstarted'" style="text-align: center; font-weight: bold">
+    No skipping straight to the results - that's cheating. Go back and fill in all the forms.
+</div>
+<div *ngIf="results !== undefined && results.status=='running'" style="text-align: center; font-weight: bold">
+        <mat-spinner style="margin:40px auto;"></mat-spinner>
+        <p>Playing {{results.count*3 | number }} years of test cricket a lot faster than normal...</p>
+        <p>(the time this takes depends on your CPU speed and the number of cores it has)</p>
+</div>
+<div *ngIf="results !== undefined && results.status=='completed'">
+    <p>Championships Simulated: <b>{{results.count | number }} seasons</b></p>
+    <p>If the championship were fair, each team should qualify for <b>{{2.0/results.teams.length | percent: '1.2'}}</b> of finals.</p>
+    <h3>Finalists</h3>
+    <p>This table shows how frequently each team finished in the top 2 places both with and without the penalty overs rule being used.</p>
+    <div class="table-responsive">
+        <table mat-table [dataSource]="dataSource" matSort #sort="matSort" class="data-table" (matSortChange)="sortData($event)" matSortDirection="desc" matSortActive="penalised" matSortDisableClear>
+            <ng-container matColumnDef="team">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Team</th>
+                <td mat-cell *matCellDef="let team" class="results-cell"><b>{{team.name}}</b></td>
+            </ng-container>
+            <ng-container matColumnDef="series">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Series</th>
+                    <td mat-cell *matCellDef="let team" class="results-cell">{{team.homeSeries+team.awaySeries}} ({{team.homeSeries}}H,{{team.awaySeries}}A)</td>
+            </ng-container>
+            <ng-container matColumnDef="matches">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Matches</th>
+                    <td mat-cell *matCellDef="let team" class="results-cell">{{team.homeMatches+team.awayMatches}} ({{team.homeMatches}}H,{{team.awayMatches}}A)</td>
+            </ng-container>
+            <ng-container matColumnDef="penalised">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Finals made</th>
+                <td mat-cell *matCellDef="let team" class="results-cell"><b>{{team.penalisedWins/results.count | percent: '1.2' }}</b></td>
+            </ng-container>
+            <ng-container matColumnDef="bias">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header></th>    
+                <td mat-cell *matCellDef="let team" class="results-cell"><span [className]="team.penalisedWins/results.count>2.0/results.teams.length?'change-up' : 'change-down'"><mat-icon >{{team.penalisedWins/results.count>2.0/results.teams.length?"arrow_drop_up" : "arrow_drop_down"}}</mat-icon>&nbsp;{{team.penalisedWins/results.count-2.0/results.teams.length | percent: '1.2' }}</span></td>
+            </ng-container>
+            <ng-container matColumnDef="unpenalised">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Finals without penalties</th>    
+                <td mat-cell *matCellDef="let team" class="results-cell">{{team.unpenalisedWins/results.count | percent: '1.2' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="ubias">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header></th>    
+                    <td mat-cell *matCellDef="let team" class="results-cell"><span [className]="team.unpenalisedWins/results.count>2.0/results.teams.length?'change-up' : 'change-down'"><mat-icon >{{team.unpenalisedWins/results.count>2.0/results.teams.length?"arrow_drop_up" : "arrow_drop_down"}}</mat-icon>&nbsp;{{team.unpenalisedWins/results.count-2.0/results.teams.length | percent: '1.2' }}</span></td>
+                </ng-container>
+                <ng-container matColumnDef="change">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Effect of Penalties</th>    
+                <td mat-cell *matCellDef="let team" class="results-cell"><span [className]="team.penalisedWins>team.unpenalisedWins?'change-up' : 'change-down'"><mat-icon >{{team.penalisedWins>team.unpenalisedWins?"arrow_drop_up" : "arrow_drop_down"}}</mat-icon>&nbsp;{{(team.penalisedWins-team.unpenalisedWins)/results.count | percent: '1.2' }}</span></td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+    </div>
+    <h3>The effect of penalities</h3>
+    <p>Penalty overs changed the finalists <b>{{results.penaltiesEffective/results.count | percent: '1.4'}}</b> of the time.</p>
+    <p>The above figure includes occasions where penalty overs changed whether teams were tied for 2nd place after points and series wins.</p>
+    <p>NOTE: In the real world where some teams are better at cricket than others, this percentage won't be so high.</p>
+
+    <h3>Tie Breakers</h3>
+    <p>Below are the percentage of simulated championships where there was a tie for qualification after points and the number of series were taken into account, and in the real world, the runs-per-wicket rate would be needed to decide who qualifies for the final.<p>
+
+    <p>When using over rate penalties: <b>{{results.penalisedTies/results.count | percent: '1.4'}}</b></p>
+    <p>When ignoring over rate penalties: <b>{{results.unpenalisedTies/results.count | percent: '1.4'}}</b></p>
+
+    <h3>Match and series results</h3>
+    <p>The table below shows how far the simulated results drifted from your configured probabilities due to the randomness of the simulation. If you re-run this simulation with the same settings, teams should move entirely randomly in this table,
+        but appear in roughly the same place the first results table above.
+    </p>
+    <div class="table-responsive">
+        <table mat-table [dataSource]="dataSource2" matSort #sort2="matSort" class="data-table" (matSortChange)="sortData2($event)" matSortDirection="desc" matSortActive="matchWins" matSortDisableClear>
+            <ng-container matColumnDef="team">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Team</th>
+                <td mat-cell *matCellDef="let team" class="results-cell"><b>{{team.name}}</b></td>
+            </ng-container>
+            <ng-container matColumnDef="series">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Series Played:</th>
+                    <td mat-cell *matCellDef="let team" class="results-cell">{{team.seriesWins+team.seriesLoss+team.seriesDraws | number}}</td>
+            </ng-container>
+            <ng-container matColumnDef="seriesWins">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Won</th>
+                    <td mat-cell *matCellDef="let team" class="results-cell">{{team.seriesWins/(team.seriesWins+team.seriesLoss+team.seriesDraws) | percent: '1.2'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="seriesDraws">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Drawn</th>
+                    <td mat-cell *matCellDef="let team" class="results-cell">{{team.seriesDraws/(team.seriesWins+team.seriesLoss+team.seriesDraws) | percent: '1.2'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="seriesLoss">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Lost</th>
+                    <td mat-cell *matCellDef="let team" class="results-cell">{{team.seriesLoss/(team.seriesWins+team.seriesLoss+team.seriesDraws) | percent: '1.2'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="matches">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Matches Played:</th>
+                    <td mat-cell *matCellDef="let team" class="results-cell">{{team.matchWins+team.matchTies+team.matchLoss+team.matchDraws | number}}</td>
+            </ng-container>
+            <ng-container matColumnDef="matchWins">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Won</th>
+                    <td mat-cell *matCellDef="let team" class="results-cell">{{team.matchWins/(team.matchWins+team.matchTies+team.matchLoss+team.matchDraws) | percent: '1.2'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="matchTies">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Tied</th>
+                    <td mat-cell *matCellDef="let team" class="results-cell">{{team.matchTies/(team.matchWins+team.matchTies+team.matchLoss+team.matchDraws) | percent: '1.2'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="matchDraws">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Drawn</th>
+                    <td mat-cell *matCellDef="let team" class="results-cell">{{team.matchDraws/(team.matchWins+team.matchTies+team.matchLoss+team.matchDraws) | percent: '1.2'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="matchLoss">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Lost</th>
+                    <td mat-cell *matCellDef="let team" class="results-cell">{{team.matchLoss/(team.matchWins+team.matchTies+team.matchLoss+team.matchDraws) | percent: '1.2'}}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+        </table>
+    </div>
+    <p>If you want to change the settings and run the simulation again, scroll up and click on the section title you want to change.</p>
+    <h2>Explanations</h2>
+
+    <p class="question">I ran this twice and got different results</p>
+    <p class="answer">The winners of each match are picked at random. Over a lot of repetitions, 
+        these numbers should tend towards a figure governed by the number of matches played, and the probabilities of each result, but they won't match perfectly. Also, computers aren't perfect at picking random
+        numbers so there will be some deviation, but it shouldn't be biased towards any particular team. The more repetitions you choose to simulate,
+        the more accurate the results, but the longer it takes.
+    </p>
+
+    <p class="question">Why do the teams who play fewer matches qualify more often?</p>
+    <p class="answer"><b>Short Answer:</b>With the ICC scoring system, teams who play fewer matches are mathematically more likely to finish near the top or the bottom of the table. Teams who play
+        a lot of matches are more likely to finish in the middle, so are less likely to qualify in the top 2 places.</p>
+    <p class="answer"><b>Long Answer:</b>120 points are divided between all the matches in a series, so a 5 match series has 24 points on offer per match, whereas a 2 match series has 60 points per match. 
+        Let's simplify things a bit by pretending every match has a winner and a loser; draws & ties don't happen, and there is no home advantage:
+    </p>
+    <ul>
+        <li>Consider the first two series in the schedule - Sri Lanka play a 2 match series against New Zealand which has four possible outcomes. In two of those,
+            the same team wins both matches so there is a 50% chance that either Sri Lanka or New Zealand will have a maximum 120 points and a 50% change they
+            will have 60 points each.</li>
+        <li>Meanwhile England play a 5 match series against Australia. Only 2 of the 32 possible outcomes have the same team win all matches so the probability of
+            either England or Australia having maximum points is 12.5%.</li>
+        <li>Therefore, it is most likely that Sri Lanka and New Zealand are top than England or Australia being top.</li>        
+        <li>As there are only rewards (qualification) for finishing in the top 2 and no penalty for finishing in the bottom 2, England and Australia have been 
+            disadvantaged by playing a longer series.</li>
+    </ul>
+    <p class="answer">Adding ties and draws back in to the calculations changes the percentages to be a bit closer than this extreme example, as does playing more series, 
+        but the principle remains: teams that play mostly short series are more likely to be at either end of the points table. 
+        Teams that play mostly long series are more likely to be in the middle and not qualify for the final.
+    </p>
+    <p class="answer">If you run this simulator with its default settings that don't bias home/away teams, the bias from short series shows up fairly consistently. 
+        With the 2019-21 schedule it would result in England (22 matches) having an approximately 5.5%-6% less chance making the final 
+        than Sri Lanka or Pakistan (13 matches each) if they all had an equal chance of winning each match they play.</p>
+   
+    <p class="question">Why does the penalty overs policy make this bias even more extreme?</p>
+    <p class="answer">The more matches a team plays, the more opportunities they have to incur penalty overs, but the probability of a team bowling slowly in a
+         given innings doesn't go down, just because the series is longer. As all penalty overs are charged 2 points in all matches,
+        the more matches a team plays the more points it is likely to lose. This is an obviously unfair policy.</p>
+    <p class="answer">To make this fairer, the points per penalty over in a match should be a percentage of the points given for winning that match, 
+        not fixed at 2 in all matches. E.g. 5% of the match points would mean a 2 point penalty in 2 match series, and a 1.2 point penalty in a 5 match series.</p>
+
+    <p class="question">Could it be fixed?</p>
+    <p class="answer">There are whole universities full of mathematicians that could give you a better answer than me, but I don't think so - 
+        not while teams play series of different lengths and you give points for every match.</p>
+    <ul>
+        <li>You could give more points to longer series; the trouble is the number of extra points you need to give varies
+            with the exact mix of series lengths the teams play in a season. The probability of draws that you are assume is going
+            to occur also changes the number of extra points you need to give to even things out.</li>
+        <li>Therefore, a revised number of points per series would have to be announced each season after the schedule was determined.</li>
+        <li>You would also need to make the points lost for each penalty over in a match a fixed percentage of the points for winning that match</li>
+        <li>Also, whilst this would actually make thing fairer, it <i>looks</i> more biased than the current system and is far harder to explain.</li>
+    </ul>        
+    
+    <p class="question">How are ties for the top 2 places broken?</p>
+    <p class="answer">If teams are tied on points, ties are broken using the number of series won by each team. I don't believe it makes any difference
+        if the series not won are drawn or lost.
+    </p>
+    <p class="answer">In the real Test Championship, if the points and series won are both tied, qualification comes down to runs scored per wicket.
+            However, in this simulation, all teams are equally good at cricket; therefore, they would have the same number of runs and the same number of wickets. 
+            This simulation randomly chooses from the tied teams, so should not be biased as each tied team stands an equal chance of being picked.</p>
+    
+    <p class="question">What effect does the frequency of drawn/tied matches have?</p>
+    <p class="answer">More frequent draws/ties slightly reduces the amount of bias towards teams that play mostly shorter series, as it reduces their chances of maximum points 
+        from a series more than it reduces the chances of maximum points for longer series.</p>
+    <p class="answer">However, as it reduces the spread between the highest/lowest point scorers, more draws also increases the chances that penalty overs will play a role in
+        determining the finalists.</p>
+
+    <p class="question">What effect does the frequency of drawn series have?</p>
+    <p class="answer">Not a lot; more draws means a team is less likely to qualify if tied on points, but the biases to the number of points scored from the series length and penalty overs
+        make the effect of this negligible.</p>
+    <p class="answer">With a 14.5% chance of a match being drawn, there is a 37% change of a 2-match series being drawn, a 15% for 3-match, 23% for 4-match and
+         a 15% chance for a 3-match series being drawn. Unsurprisingly series with odd numbers of matches are drawn less frequently; therefore, teams that play mostly odd
+         numbers of series stand a better chance of having a high number of series wins than those that play mostly even numbers, as there will be fewer drawn series.
+         Therefore, odd series give a slight advantage in the tie-break, but not enough to overcome he advantage that playing fewer matches has.</p>
+    
+    <p class="question">How do I know this is accurate? The simulation may contain bugs.</p>
+    <p class="answer">This simulation is open source and runs entirely in your browser - there is no server-side code. If you want to review the calculations,
+        you can browse the source code on <a href="https://github.com/PaulHickman-dev/test-championship">Git Hub</a>. If you do find a problem,
+        please <a href="https://github.com/PaulHickman-dev/test-championship/issues/new">open an issue</a>, and if you would like to contribute an enhancement, please submit
+        a pull request.</p>
+    
+</div>
