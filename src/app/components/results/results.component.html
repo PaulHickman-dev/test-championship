@@ -116,29 +116,29 @@
     <p class="question">I ran this twice and got different results</p>
     <p class="answer">The winners of each match are picked at random. Over a lot of repetitions, 
         these numbers should tend towards a figure governed by the number of matches played, and the probabilities of each result, but they won't match perfectly. Also, computers aren't perfect at picking random
-        numbers so there will be some deviation, but it shouldn't be biased towards any particular team. The more repetitions you choose to simulate,
+        numbers, so there will be some deviation, but it shouldn't be biased towards any particular team. The more repetitions you choose to simulate,
         the more accurate the results, but the longer it takes.
     </p>
 
     <p class="question">Why do the teams who play fewer matches qualify more often?</p>
-    <p class="answer"><b>Short Answer:</b>With the ICC scoring system, teams who play fewer matches are mathematically more likely to finish near the top or the bottom of the table. Teams who play
+    <p class="answer"><b>Short Answer:</b> With the ICC scoring system, teams who play fewer matches are mathematically more likely to finish near the top or the bottom of the table. Teams who play
         a lot of matches are more likely to finish in the middle, so are less likely to qualify in the top 2 places.</p>
-    <p class="answer"><b>Long Answer:</b>120 points are divided between all the matches in a series, so a 5 match series has 24 points on offer per match, whereas a 2 match series has 60 points per match. 
+    <p class="answer"><b>Long Answer:</b> 120 points are divided between all the matches in a series, so a 5 match series has 24 points on offer per match, whereas a 2 match series has 60 points per match. 
         Let's simplify things a bit by pretending every match has a winner and a loser; draws & ties don't happen, and there is no home advantage:
     </p>
     <ul>
         <li>Consider the first two series in the schedule - Sri Lanka play a 2 match series against New Zealand which has four possible outcomes. In two of those,
-            the same team wins both matches so there is a 50% chance that either Sri Lanka or New Zealand will have a maximum 120 points and a 50% change they
+            the same team wins both matches, so there is a 50% chance that either Sri Lanka or New Zealand will have a maximum 120 points and a 50% chance they
             will have 60 points each.</li>
-        <li>Meanwhile England play a 5 match series against Australia. Only 2 of the 32 possible outcomes have the same team win all matches so the probability of
-            either England or Australia having maximum points is 12.5%.</li>
-        <li>Therefore, it is most likely that Sri Lanka and New Zealand are top than England or Australia being top.</li>        
+        <li>Meanwhile, England play a 5 match series against Australia. Only 2 of the 32 possible outcomes have the same team win all matches, so the probability of
+            either England or Australia having maximum points is only 12.5%.</li>
+        <li>Therefore, it is more likely that Sri Lanka and New Zealand are in first place than England or Australia being top.</li>        
         <li>As there are only rewards (qualification) for finishing in the top 2 and no penalty for finishing in the bottom 2, England and Australia have been 
             disadvantaged by playing a longer series.</li>
     </ul>
     <p class="answer">Adding ties and draws back in to the calculations changes the percentages to be a bit closer than this extreme example, as does playing more series, 
         but the principle remains: teams that play mostly short series are more likely to be at either end of the points table. 
-        Teams that play mostly long series are more likely to be in the middle and not qualify for the final.
+        Teams that play mostly long series are more likely to be in the middle and thus less likely to qualify for the final.
     </p>
     <p class="answer">If you run this simulator with its default settings that don't bias home/away teams, the bias from short series shows up fairly consistently. 
         With the 2019-21 schedule it would result in England (22 matches) having an approximately 5.5%-6% less chance making the final 
@@ -146,8 +146,8 @@
    
     <p class="question">Why does the penalty overs policy make this bias even more extreme?</p>
     <p class="answer">The more matches a team plays, the more opportunities they have to incur penalty overs, but the probability of a team bowling slowly in a
-         given innings doesn't go down, just because the series is longer. As all penalty overs are charged 2 points in all matches,
-        the more matches a team plays the more points it is likely to lose. This is an obviously unfair policy.</p>
+         given match doesn't go down, just because the series is longer. As all penalty overs are charged 2 points in all matches,
+        the more matches a team plays, the more points it is likely to lose. This is an obviously unfair policy.</p>
     <p class="answer">To make this fairer, the points per penalty over in a match should be a percentage of the points given for winning that match, 
         not fixed at 2 in all matches. E.g. 5% of the match points would mean a 2 point penalty in 2 match series, and a 1.2 point penalty in a 5 match series.</p>
 
@@ -156,13 +156,13 @@
         not while teams play series of different lengths and you give points for every match.</p>
     <ul>
         <li>You could give more points to longer series; the trouble is the number of extra points you need to give varies
-            with the exact mix of series lengths the teams play in a season. The probability of draws that you are assume is going
-            to occur also changes the number of extra points you need to give to even things out.</li>
+            with the exact mix of series lengths the teams play in a season. The probability of draws also changes the number of extra points you need to give to even things out.</li>
         <li>Therefore, a revised number of points per series would have to be announced each season after the schedule was determined.</li>
         <li>You would also need to make the points lost for each penalty over in a match a fixed percentage of the points for winning that match</li>
         <li>Also, whilst this would actually make thing fairer, it <i>looks</i> more biased than the current system and is far harder to explain.</li>
     </ul>        
-    
+    <p class="answer">The simple way to make things fair is to have all teams earn points from the same number of matches and don't give points to every match in a series.</p>
+
     <p class="question">How are ties for the top 2 places broken?</p>
     <p class="answer">If teams are tied on points, ties are broken using the number of series won by each team. I don't believe it makes any difference
         if the series not won are drawn or lost.
